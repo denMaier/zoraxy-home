@@ -24,7 +24,7 @@ const (
 	maxPassword    = 72 // bcrypt ignores everything after 72 bytes
 )
 
-var usernameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9._-]{0,39}$`)
+var usernameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9._@+-]{0,63}$`)
 
 type Account struct {
 	Username        string    `json:"username"`
@@ -62,10 +62,10 @@ func normalizeUsername(u string) string { return strings.ToLower(strings.TrimSpa
 
 func checkPassword(pw string) error {
 	if len(pw) < minPassword {
-		return errors.New("password must be at least 8 characters")
+		return errors.New("Password must be at least 8 characters.")
 	}
 	if len(pw) > maxPassword {
-		return errors.New("password must be at most 72 bytes")
+		return errors.New("Password must be at most 72 bytes.")
 	}
 	return nil
 }
@@ -108,7 +108,7 @@ func (s *AccountStore) Get(username string) (Account, bool) {
 func (s *AccountStore) Put(in Account, password string, create bool) error {
 	in.Username = normalizeUsername(in.Username)
 	if !usernameRe.MatchString(in.Username) {
-		return errors.New("username: 1–40 characters, lowercase letters, digits, dot, dash or underscore")
+		return errors.New("Username may only use letters, digits and . _ - @ + (no spaces), up to 64 characters.")
 	}
 	if password != "" || create {
 		if err := checkPassword(password); err != nil {

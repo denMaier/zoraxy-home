@@ -36,14 +36,17 @@ async function api(path, body) {
   return data;
 }
 
+// The toast is a popover so it sits in the top layer, above open editor dialogs.
+// Re-showing it moves it above a dialog opened after the last toast.
 let toastTimer = null;
 function toast(msg, isError) {
   const t = $('toast');
   t.textContent = msg;
   t.classList.toggle('error', !!isError);
-  t.hidden = false;
+  if (t.matches(':popover-open')) t.hidePopover();
+  t.showPopover();
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (t.hidden = true), isError ? 6000 : 2500);
+  toastTimer = setTimeout(() => t.hidePopover(), isError ? 6000 : 2500);
 }
 
 /* ---------- Icons (same rules as the home screen) ---------- */
@@ -251,7 +254,9 @@ function renderAccounts() {
     return li;
   }));
   $('account-foot').textContent = state.passwordLogin
-    ? 'These people sign in on the lock screen with their username and password.'
+    ? accounts.length
+      ? 'These people sign in on the lock screen with their username and password.'
+      : 'Password sign-in is on, but the lock screen only offers it once an account exists.'
     : state.full
       ? 'Password sign-in is off. Turn it on under Sign-in above.'
       : 'Password sign-in is off. Turn it on in Zoraxy → Plugins → Home.';

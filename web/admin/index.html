@@ -16,7 +16,7 @@
       <p class="sub" id="sync-line">Loading…</p>
     </header>
 
-    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="toast" id="toast" role="status" aria-live="polite" popover="manual"></div>
 
     {{if .embedded}}
     <section class="group" id="signin-section">
@@ -165,7 +165,7 @@
         <button type="button" class="link strong" id="account-save">Save</button>
       </div>
       <div class="card">
-        <label class="row"><span>Username</span><input name="username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="alex"></label>
+        <label class="row"><span>Username</span><input name="username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="64" placeholder="alex or alex@example.com"></label>
         <label class="row"><span>Name</span><input name="name" autocomplete="off" placeholder="Alex Doe"></label>
         <label class="row"><span>Email</span><input name="email" type="email" autocomplete="off" placeholder="Optional"></label>
         <label class="row"><span>Password</span><input name="password" type="password" autocomplete="new-password"></label>
