@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Home</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/static/icon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <style id="theme-css"></style>
+  <script src="/static/app.js" defer></script>
+</head>
+<body class="booting" data-wp="blobs" data-appearance="dark" data-icon-style="light" data-labels="shown">
+  <div class="wallpaper" aria-hidden="true">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- Lock screen -->
+  <section id="lock" class="lock" hidden>
+    <div class="lock-top">
+      <svg class="lock-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h6V7a3 3 0 0 0-6 0v3z"/></svg>
+      <div class="lock-date" id="lock-date"></div>
+      <div class="lock-time" id="lock-time"></div>
+    </div>
+    <div class="lock-bottom">
+      <p class="lock-note" id="lock-note"></p>
+      <form class="pw-form" id="pw-form" hidden>
+        <input id="pw-user" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Username" aria-label="Username" required>
+        <div class="pw-row">
+          <input id="pw-pass" name="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+          <button class="pw-go" id="pw-go" type="submit" aria-label="Unlock">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h10.17l-4.58-4.59L12 5l7 7-7 7-1.41-1.41L15.17 13H5z"/></svg>
+          </button>
+        </div>
+        <p class="pw-error" id="pw-error" role="alert"></p>
+        <a class="pw-sso" id="pw-sso" href="/auth/login" hidden></a>
+      </form>
+      <a class="unlock" id="unlock" href="/auth/login">
+        <span class="unlock-label">Swipe up or tap to unlock</span>
+        <span class="unlock-sub" id="unlock-sub">with single sign-on</span>
+      </a>
+      <div class="home-bar"></div>
+    </div>
+  </section>
+
+  <!-- Home screen -->
+  <section id="home" class="home" hidden>
+    <header class="status-bar">
+      <span class="status-time" id="status-time"></span>
+      <div class="status-right">
+        <button class="done-button" id="done" type="button" hidden>Done</button>
+        <button class="avatar" id="avatar" type="button" aria-label="Account and settings"></button>
+      </div>
+    </header>
+
+    <main class="pages" id="pages" tabindex="-1" aria-label="Apps"></main>
+
+    <div class="below-grid">
+      <div class="dots" id="dots" role="tablist" aria-label="Pages"></div>
+      <button class="search-pill" id="search-pill" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg>
+        Search
+      </button>
+    </div>
+
+    <nav class="dock" id="dock" aria-label="Dock"></nav>
+    <div class="home-bar"></div>
+  </section>
+
+  <!-- Spotlight -->
+  <div class="spotlight" id="spotlight" hidden>
+    <div class="spotlight-panel">
+      <label class="spotlight-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg>
+        <input id="spotlight-input" type="search" placeholder="Search apps" autocomplete="off" spellcheck="false" aria-label="Search apps">
+      </label>
+      <ul class="spotlight-results" id="spotlight-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <!-- Account sheet -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-name">
+      <div class="sheet-grabber"></div>
+      <div class="sheet-profile">
+        <div class="sheet-avatar" id="sheet-avatar"></div>
+        <div>
+          <div class="sheet-name" id="sheet-name"></div>
+          <div class="sheet-email" id="sheet-email"></div>
+        </div>
+      </div>
+      <div class="sheet-group">
+        <div class="sheet-label">Theme</div>
+        <div class="themes" id="themes"></div>
+      </div>
+      <div class="sheet-list">
+        <button type="button" id="edit-home">Edit Home Screen</button>
+        <a href="/settings/" id="open-settings" hidden>Settings</a>
+        <a href="/auth/logout" class="danger">Sign Out</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open folder -->
+  <div class="folder-overlay" id="folder" hidden>
+    <div class="folder-panel" id="folder-panel" role="dialog" aria-label="Folder">
+      <input class="folder-name" id="folder-name" maxlength="40" aria-label="Folder name" autocomplete="off" spellcheck="false">
+      <div class="folder-apps" id="folder-apps"></div>
+    </div>
+  </div>
+
+  <div class="launch" id="launch" aria-hidden="true"></div>
+</body>
+</html>

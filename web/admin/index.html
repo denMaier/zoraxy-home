@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="zoraxy.csrf.Token" content="{{.csrfToken}}">
+  <title>{{.title}} Settings</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body class="{{if .embedded}}embedded{{end}}">
+  <div class="wrap">
+    <header class="topbar">
+      {{if not .embedded}}<a class="back" href="/">‹ Home</a>{{end}}
+      <h1>Settings</h1>
+      <p class="sub" id="sync-line">Loading…</p>
+    </header>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    {{if .embedded}}
+    <section class="group" id="signin-section">
+      <h2>Sign-in</h2>
+      <div class="card" id="settings-form">
+        <label class="row"><span>Homepage URL</span><input name="public_url" placeholder="https://home.example.com" inputmode="url"></label>
+        <label class="row"><span>Title</span><input name="title" placeholder="Home"></label>
+        <label class="row"><span>Listen address</span><input name="listen_addr" placeholder="127.0.0.1:8099"></label>
+        <div class="row hint">Point a Zoraxy HTTP proxy rule for the homepage URL at the listen address. Changing the address needs a plugin restart.</div>
+
+        <label class="row"><span>Issuer</span><input name="issuer" placeholder="https://auth.example.com" inputmode="url"></label>
+        <label class="row"><span>Client ID</span><input name="client_id"></label>
+        <label class="row"><span>Client secret</span><input name="client_secret" type="password" autocomplete="new-password"></label>
+        <label class="row"><span>Scopes</span><input name="scopes" placeholder="openid profile email groups"></label>
+        <label class="row"><span>Groups claim</span><input name="groups_claim" placeholder="groups"></label>
+        <label class="row"><span>Provider name</span><input name="provider_name" placeholder="Shown on the lock screen, e.g. Pocket ID"></label>
+        <div class="row copy-row"><span>Callback URL</span><code id="callback-url">—</code><button type="button" class="link" id="copy-callback">Copy</button></div>
+        <div class="row hint">Register an OIDC client with this callback URL (Pocket ID: OIDC Clients → Add), then copy the client ID and secret here.</div>
+
+        <label class="row"><span>Admin group</span><input name="admin_group" placeholder="home_admins"></label>
+        <label class="row"><span>Allowed groups</span><input name="allowed_groups" placeholder="Empty: anyone the provider lets in"></label>
+
+        <label class="row toggle"><span>Password sign-in</span><input name="password_login" type="checkbox" role="switch"></label>
+        <div class="row hint">Lets the local accounts below sign in with a username and password, with or without OIDC. Leave the OIDC fields empty to use passwords only.</div>
+
+        <div class="actions">
+          <button type="button" class="secondary" id="test-oidc">Test discovery</button>
+          <button type="button" class="primary" id="save-settings">Save</button>
+        </div>
+      </div>
+    </section>
+    {{end}}
+
+    <section class="group">
+      <div class="group-head">
+        <h2>Apps</h2>
+        <button type="button" class="link" id="sync-now">Sync now</button>
+      </div>
+      <input class="filter" id="app-filter" type="search" placeholder="Filter apps" aria-label="Filter apps">
+      <ul class="card list" id="app-list"></ul>
+      <p class="foot">Every enabled HTTP proxy rule becomes an app. Restrict an app to groups, rename it or give it another icon here; users arrange their own home screens.</p>
+    </section>
+
+    <section class="group">
+      <div class="group-head">
+        <h2>Themes</h2>
+        <button type="button" class="link" id="new-theme">New theme</button>
+      </div>
+      <ul class="card list" id="theme-list"></ul>
+      <p class="foot">People pick a theme from their account sheet. The default theme is used on the lock screen and by anyone who hasn't picked one. Editing a built-in theme saves a copy.</p>
+    </section>
+
+    <section class="group">
+      <div class="group-head">
+        <h2>Accounts</h2>
+        <button type="button" class="link" id="new-account">New account</button>
+      </div>
+      <ul class="card list" id="account-list"></ul>
+      <p class="foot" id="account-foot"></p>
+    </section>
+
+    <section class="group">
+      <h2>People</h2>
+      <ul class="card list" id="user-list"></ul>
+      <p class="foot">Accounts and groups come from your identity provider. People appear here after their first sign-in. Blocking only affects this homepage.</p>
+    </section>
+  </div>
+
+  <dialog class="editor" id="app-editor">
+    <div class="editor-body" id="app-form">
+      <div class="editor-head">
+        <button type="button" class="link" id="editor-cancel">Cancel</button>
+        <strong id="editor-title">App</strong>
+        <button type="button" class="link strong" id="editor-save">Save</button>
+      </div>
+      <div class="preview"><div id="editor-icon"></div><div class="preview-text"><div id="editor-name"></div><div id="editor-domain" class="muted"></div></div></div>
+      <div class="card">
+        <label class="row"><span>Name</span><input name="name"></label>
+        <label class="row"><span>Icon</span><input name="icon" placeholder="slug or https://…"></label>
+        <div class="row hint">Slugs come from <a href="https://dashboard-icons.homarr.dev" target="_blank" rel="noopener">dashboard-icons</a>, e.g. <code>jellyfin</code>, <code>immich</code>, <code>proxmox</code>.</div>
+        <label class="row"><span>Link</span><input name="url" placeholder="https://…" inputmode="url"></label>
+        <label class="row toggle"><span>Show on homepage</span><input name="visible" type="checkbox" role="switch"></label>
+      </div>
+      <div class="card">
+        <div class="row stack"><span>Visible to groups</span><div class="chips" id="group-chips"></div>
+          <input name="groups_extra" placeholder="Other groups, comma separated"></div>
+        <div class="row hint">No group selected: every signed-in user sees it. Admins always see every visible app.</div>
+      </div>
+      <div class="editor-foot"><button type="button" class="link danger" id="editor-reset">Reset to defaults</button></div>
+    </div>
+  </dialog>
+  <dialog class="editor" id="theme-editor">
+    <div class="editor-body" id="theme-form">
+      <div class="editor-head">
+        <button type="button" class="link" id="theme-cancel">Cancel</button>
+        <strong id="theme-title">Theme</strong>
+        <button type="button" class="link strong" id="theme-save">Save</button>
+      </div>
+
+      <div class="theme-preview" id="theme-preview" aria-hidden="true">
+        <div class="tp-status"><span>9:41</span><span class="tp-avatar"></span></div>
+        <div class="tp-grid" id="tp-grid"></div>
+        <div class="tp-dock" id="tp-dock"></div>
+      </div>
+
+      <div class="card">
+        <label class="row"><span>Name</span><input name="name" maxlength="40" placeholder="My theme"></label>
+        <label class="row"><span>Text</span>
+          <select name="appearance"><option value="dark">Light text on dark</option><option value="light">Dark text on light</option></select></label>
+        <label class="row"><span>Font</span>
+          <select name="font"><option value="system">System</option><option value="rounded">Rounded</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label>
+        <label class="row"><span>Accent</span><input name="accent" type="color"></label>
+      </div>
+
+      <div class="card">
+        <label class="row"><span>Wallpaper</span>
+          <select name="wp_type"><option value="blobs">Soft light (animated)</option><option value="gradient">Gradient</option><option value="solid">Solid</option><option value="image">Image</option></select></label>
+        <div class="row"><span>Colors</span>
+          <div class="colors"><input name="c0" type="color" aria-label="Base color"><input name="c1" type="color" aria-label="Color 2"><input name="c2" type="color" aria-label="Color 3"><input name="c3" type="color" aria-label="Color 4"></div></div>
+        <label class="row" data-when="image"><span>Image URL</span><input name="image" placeholder="https://…" inputmode="url"></label>
+        <label class="row"><span>Dim</span><input name="dim" type="range" min="0" max="0.8" step="0.05"></label>
+      </div>
+
+      <div class="card">
+        <label class="row"><span>Icon shape</span>
+          <select name="shape"><option value="squircle">Squircle</option><option value="rounded">Rounded</option><option value="circle">Circle</option><option value="square">Square</option></select></label>
+        <label class="row"><span>Icon tiles</span>
+          <select name="style"><option value="light">Light</option><option value="dark">Dark</option><option value="glass">Glass</option></select></label>
+        <label class="row toggle"><span>Show labels</span><input name="labels" type="checkbox" role="switch"></label>
+      </div>
+
+      <div class="card">
+        <div class="row stack"><span>Custom CSS</span>
+          <textarea name="css" rows="6" spellcheck="false" placeholder=".dock { border-radius: 40px; }&#10;body { --glass: rgba(0,0,0,.3); }"></textarea></div>
+        <div class="row hint">Injected after the built-in styles for people using this theme. Variables such as <code>--glass</code>, <code>--text</code>, <code>--icon-bg</code> and <code>--accent</code> are the easiest hooks.</div>
+      </div>
+
+      <div class="editor-foot"><button type="button" class="link danger" id="theme-delete">Delete theme</button></div>
+    </div>
+  </dialog>
+  <dialog class="editor" id="account-editor">
+    <div class="editor-body" id="account-form">
+      <div class="editor-head">
+        <button type="button" class="link" id="account-cancel">Cancel</button>
+        <strong id="account-title">Account</strong>
+        <button type="button" class="link strong" id="account-save">Save</button>
+      </div>
+      <div class="card">
+        <label class="row"><span>Username</span><input name="username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="alex"></label>
+        <label class="row"><span>Name</span><input name="name" autocomplete="off" placeholder="Alex Doe"></label>
+        <label class="row"><span>Email</span><input name="email" type="email" autocomplete="off" placeholder="Optional"></label>
+        <label class="row"><span>Password</span><input name="password" type="password" autocomplete="new-password"></label>
+        <div class="row hint" id="account-pw-hint">At least 8 characters. Changing it signs the person out everywhere.</div>
+      </div>
+      <div class="card">
+        <div class="row stack"><span>Groups</span><div class="chips" id="account-chips"></div>
+          <input name="groups_extra" placeholder="Other groups, comma separated"></div>
+        <div class="row hint">Put someone in the admin group to let them open Settings from the homepage.</div>
+      </div>
+      <div class="editor-foot"><button type="button" class="link danger" id="account-delete">Delete account</button></div>
+    </div>
+  </dialog>
+</body>
+</html>

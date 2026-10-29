@@ -1,0 +1,26 @@
+{
+ "id": "io.github.denmaier.zoraxy.home",
+ "name": "Home",
+ "author": "Denis Maier",
+ "author_contact": "https://github.com/denMaier",
+ "description": "Turns your active HTTP proxy rules into a phone-style homepage with OIDC sign-in (Pocket ID, Authentik, Keycloak, …), per-user layouts, folders and themes",
+ "url": "https://github.com/denMaier/zoraxy-home",
+ "type": 1,
+ "version_major": 0,
+ "version_minor": 2,
+ "version_patch": 0,
+ "static_capture_paths": null,
+ "static_capture_ingress": "",
+ "dynamic_capture_sniff": "",
+ "dynamic_capture_ingress": "",
+ "ui_path": "/ui",
+ "subscription_path": "",
+ "subscriptions_events": null,
+ "permitted_api_endpoints": [
+  {
+   "method": "GET",
+   "endpoint": "/plugin/api/proxy/list",
+   "reason": "Reads the HTTP proxy rules that are shown as apps on the homepage"
+  }
+ ]
+}
