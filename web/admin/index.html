@@ -99,11 +99,13 @@
         <div class="row hint">Slugs come from <a href="https://dashboard-icons.homarr.dev" target="_blank" rel="noopener">dashboard-icons</a>, e.g. <code>jellyfin</code>, <code>immich</code>, <code>proxmox</code>.</div>
         <label class="row"><span>Link</span><input name="url" placeholder="https://…" inputmode="url"></label>
         <label class="row toggle"><span>Show on homepage</span><input name="visible" type="checkbox" role="switch"></label>
+        <div class="row hint" id="editor-tag-hidden" hidden>Hidden by the <code>home:hidden</code> tag on the Zoraxy rule.</div>
       </div>
       <div class="card">
         <div class="row stack"><span>Visible to groups</span><div class="chips" id="group-chips"></div>
           <input name="groups_extra" placeholder="Other groups, comma separated"></div>
         <div class="row hint">No group selected: every signed-in user sees it. Admins always see every visible app.</div>
+        <div class="row hint" id="editor-tag-groups" hidden></div>
       </div>
       <div class="editor-foot"><button type="button" class="link danger" id="editor-reset">Reset to defaults</button></div>
     </div>

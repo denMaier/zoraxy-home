@@ -136,6 +136,9 @@ func TestVisibleApps(t *testing.T) {
 	}}
 	a := &App{routes: &RouteSource{routes: []Route{
 		{Domain: "open.example.com"}, {Domain: "secret.example.com"}, {Domain: "gone.example.com"}, {Domain: "off.example.com", Disabled: true},
+		{Domain: "tagged.example.com", Tags: []string{"home:media", "streaming"}},
+		{Domain: "stash.example.com", Tags: []string{"Home:hidden"}},
+		{Domain: "admin.example.com", Tags: []string{"home:admin"}},
 	}}}
 	ids := func(apps []HomeApp) (out []string) {
 		for _, x := range apps {
@@ -149,7 +152,10 @@ func TestVisibleApps(t *testing.T) {
 	if got := ids(a.visibleApps(s, User{Groups: []string{"ops"}})); len(got) != 2 {
 		t.Errorf("ops sees %v", got)
 	}
-	if got := ids(a.visibleApps(s, User{Groups: []string{"admins"}})); len(got) != 2 {
+	if got := ids(a.visibleApps(s, User{Groups: []string{"media"}})); !reflect.DeepEqual(got, []string{"open.example.com", "tagged.example.com"}) {
+		t.Errorf("media sees %v", got)
+	}
+	if got := ids(a.visibleApps(s, User{Groups: []string{"admins"}})); len(got) != 4 {
 		t.Errorf("admin sees %v", got)
 	}
 }

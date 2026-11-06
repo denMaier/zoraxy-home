@@ -542,6 +542,10 @@ function openEditor(app) {
   f.url.value = o.url || '';
   f.url.placeholder = `https://${app.id}`;
   f.visible.checked = !o.hidden;
+  $('editor-tag-hidden').hidden = !app.hidden || o.hidden;
+  const tagGroups = (app.groups || []).filter((g) => !editing.groups.has(g));
+  $('editor-tag-groups').hidden = !tagGroups.length;
+  $('editor-tag-groups').textContent = `Also limited to ${tagGroups.join(', ')} by the rule's home: tags.`;
   $('editor-title').textContent = app.name;
   $('editor-domain').textContent = app.id;
 

@@ -11,10 +11,10 @@ A [Zoraxy](https://github.com/tobychui/zoraxy) plugin that turns your active HTT
   - **Local accounts**: admins create accounts with a username, password and groups in Settings. You can use them with or without OIDC.
 - **Groups** decide:
   - who may sign in at all (*allowed groups*);
-  - who sees which app (per-app groups);
+  - who sees which app (per-app groups). A Zoraxy rule tag `home:<group>` adds that group, `home:admin` stands for the admin group, and `home:hidden` hides the app from everyone;
   - who is an admin (*admin group*). Admins open **Settings** from the account sheet to manage apps, accounts, themes and people.
 - **Each person keeps their own layout**: icon order, dock, folders and theme, stored on the server.
-- **Folders**: drop one app on another in jiggle mode to make one, and drag apps out to remove them. A first-time user gets starter folders grouped by Zoraxy rule **tags** (a tag needs at least two apps).
+- **Folders**: drop one app on another in jiggle mode to make one, and drag apps out to remove them. A first-time user gets starter folders grouped by Zoraxy rule **tags**, ignoring `home:` tags (a tag needs at least two apps).
 - **Themes** set the wallpaper (animated soft light, gradient, solid or image, with dimming), text appearance, font, accent colour, icon shape, icon tile style and labels.
   - Eight themes are built in.
   - Admins create their own with a live preview and optional custom CSS, and pick the default.

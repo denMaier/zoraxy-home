@@ -68,8 +68,32 @@ func hostOf(rawURL string) string {
 	return strings.ToLower(u.Hostname())
 }
 
+// homeTags splits a rule's tags into the home:<group> tags that control
+// access and the rest, which name starter folders. home:hidden hides the app
+// and home:admin stands for the configured admin group.
+func homeTags(tags []string, adminGroup string) (hidden bool, groups, rest []string) {
+	for _, t := range tags {
+		t = strings.TrimSpace(t)
+		if len(t) < 5 || !strings.EqualFold(t[:5], "home:") {
+			rest = append(rest, t)
+			continue
+		}
+		switch g := strings.TrimSpace(t[5:]); g {
+		case "hidden":
+			hidden = true
+		case "admin":
+			if adminGroup != "" {
+				groups = append(groups, adminGroup)
+			}
+		default:
+			groups = append(groups, g)
+		}
+	}
+	return
+}
+
 // catalog merges live Zoraxy routes with admin overrides. Disabled rules and the
-// homepage's own domain are left out.
+// homepage's own domain are left out. home: tags on the rule add to the override.
 func (a *App) catalog(s Settings) []AdminApp {
 	self := hostOf(s.PublicURL)
 	var out []AdminApp
@@ -78,18 +102,19 @@ func (a *App) catalog(s Settings) []AdminApp {
 			continue
 		}
 		o := s.Apps[r.Domain]
+		hidden, groups, tags := homeTags(r.Tags, s.AdminGroup)
 		app := AdminApp{
 			HomeApp: HomeApp{
 				ID:   r.Domain,
 				Name: firstNonEmpty(o.Name, defaultName(r.Domain)),
 				URL:  firstNonEmpty(o.URL, "https://"+r.Domain),
 				Icon: firstNonEmpty(o.Icon, defaultIcon(r.Domain)),
-				Tags: r.Tags,
+				Tags: tags,
 			},
 			Route:    r,
 			Override: o,
-			Hidden:   o.Hidden,
-			Groups:   o.Groups,
+			Hidden:   o.Hidden || hidden,
+			Groups:   cleanList(append(append([]string(nil), o.Groups...), groups...)),
 		}
 		out = append(out, app)
 	}

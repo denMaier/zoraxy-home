@@ -33,8 +33,8 @@ func main() {
 		URL:           "https://github.com/denMaier/zoraxy-home",
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  0,
-		VersionMinor:  2,
-		VersionPatch:  1,
+		VersionMinor:  3,
+		VersionPatch:  0,
 
 		UIPath: UI_PATH,
 
