@@ -40,3 +40,36 @@ func TestIssuerTrailingSlashKept(t *testing.T) {
 		t.Fatalf("mismatched issuer should explain the trailing slash, got %v", err)
 	}
 }
+
+func TestValidIssuer(t *testing.T) {
+	for _, ok := range []string{
+		"https://auth.example.com",
+		"https://auth.example.com/application/o/home/",
+		"http://10.0.0.5:9000/realms/home",
+	} {
+		if err := validIssuer(ok); err != nil {
+			t.Errorf("%q rejected: %v", ok, err)
+		}
+	}
+	for _, bad := range []string{
+		"",
+		"auth.example.com",
+		"javascript:alert(1)",
+		"ftp://auth.example.com",
+		"https://user:pass@auth.example.com",
+		"https://auth.example.com/?x=1",
+		"https://auth.example.com/?",
+		"https://auth.example.com/#frag",
+		"https://auth.example.com/#",
+		"https://auth.example.com/a b",
+		"https://auth.example.com/a\tb",
+		"https://auth.example.com/\r\nX-Injected: 1",
+		"https://auth.example.com/<script>",
+		`https://auth.example.com/"onmouseover="x`,
+		"https://auth.exämple.com",
+	} {
+		if validIssuer(bad) == nil {
+			t.Errorf("%q accepted", bad)
+		}
+	}
+}

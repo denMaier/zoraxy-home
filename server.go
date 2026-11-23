@@ -822,7 +822,19 @@ func validIssuer(issuer string) error {
 	if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") {
 		return errors.New("issuer must be a full URL including https://, e.g. https://auth.example.com")
 	}
+	// OIDC Discovery §3: scheme, host, optional port and path; nothing else
+	if u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" || strings.Contains(issuer, "#") ||
+		strings.ContainsFunc(issuer, func(r rune) bool { return !isURLChar(r) }) {
+		return errors.New("issuer must be a plain URL without spaces, credentials, ?query or #fragment, e.g. https://auth.example.com/application/o/home/")
+	}
 	return nil
+}
+
+// isURLChar reports whether r may appear unescaped in a URL (RFC 3986 unreserved,
+// reserved and %), which rules out spaces, control characters, quotes and <>
+func isURLChar(r rune) bool {
+	return r < 0x80 && (r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' ||
+		strings.ContainsRune("-._~:/?#[]@!$&'()*+,;=%", r))
 }
 
 // publicSettings never sends the client secret or session key to the browser

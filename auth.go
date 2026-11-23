@@ -52,6 +52,10 @@ func (a *Authenticator) getProvider(s Settings) (*oidc.Provider, error) {
 	if a.provider != nil && a.forIssuer == issuer {
 		return a.provider, nil
 	}
+	// The config file can be edited by hand, so check what the admin form would have
+	if err := validIssuer(issuer); err != nil {
+		return nil, err
+	}
 	// go-oidc keeps this context for later JWKS refreshes, so it must outlive the request
 	ctx := oidc.ClientContext(context.Background(), &http.Client{Timeout: 10 * time.Second})
 	p, err := oidc.NewProvider(ctx, issuer)
