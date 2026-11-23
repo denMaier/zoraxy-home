@@ -763,7 +763,8 @@ func (a *App) adminHandler(prefix string, full bool) http.Handler {
 				s.ListenAddr = firstNonEmpty(strings.TrimSpace(in.ListenAddr), s.ListenAddr)
 				s.PublicURL = strings.TrimRight(strings.TrimSpace(in.PublicURL), "/")
 				s.Title = firstNonEmpty(strings.TrimSpace(in.Title), "Home")
-				s.OIDC.Issuer = strings.TrimRight(strings.TrimSpace(in.OIDC.Issuer), "/")
+				// Kept verbatim: OIDC compares issuers as exact strings, and some providers (Authentik) end theirs with "/"
+				s.OIDC.Issuer = strings.TrimSpace(in.OIDC.Issuer)
 				s.OIDC.ClientID = strings.TrimSpace(in.OIDC.ClientID)
 				if in.OIDC.ClientSecret != secretPlaceholder {
 					s.OIDC.ClientSecret = strings.TrimSpace(in.OIDC.ClientSecret)
@@ -793,7 +794,7 @@ func (a *App) adminHandler(prefix string, full bool) http.Handler {
 				return
 			}
 			s := a.cfg.Get()
-			if issuer := strings.TrimRight(strings.TrimSpace(in.Issuer), "/"); issuer != "" {
+			if issuer := strings.TrimSpace(in.Issuer); issuer != "" {
 				s.OIDC.Issuer = issuer
 			}
 			if err := validIssuer(s.OIDC.Issuer); err != nil {
@@ -801,7 +802,7 @@ func (a *App) adminHandler(prefix string, full bool) http.Handler {
 				return
 			}
 			if _, err := oidc.NewProvider(r.Context(), s.OIDC.Issuer); err != nil {
-				writeError(w, http.StatusBadGateway, err)
+				writeError(w, http.StatusBadGateway, issuerHint(err))
 				return
 			}
 			writeJSON(w, http.StatusOK, map[string]string{"ok": "Discovery document and keys reachable"})
