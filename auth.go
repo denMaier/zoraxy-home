@@ -48,15 +48,19 @@ func NewAuthenticator(cfg *Config) *Authenticator {
 func (a *Authenticator) getProvider(s Settings) (*oidc.Provider, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	issuer := strings.TrimRight(s.OIDC.Issuer, "/")
+	issuer := s.OIDC.Issuer
 	if a.provider != nil && a.forIssuer == issuer {
 		return a.provider, nil
+	}
+	// The config file can be edited by hand, so check what the admin form would have
+	if err := validIssuer(issuer); err != nil {
+		return nil, err
 	}
 	// go-oidc keeps this context for later JWKS refreshes, so it must outlive the request
 	ctx := oidc.ClientContext(context.Background(), &http.Client{Timeout: 10 * time.Second})
 	p, err := oidc.NewProvider(ctx, issuer)
 	if err != nil {
-		return nil, fmt.Errorf("OIDC discovery for %s: %w", issuer, err)
+		return nil, fmt.Errorf("OIDC discovery for %s: %w", issuer, issuerHint(err))
 	}
 	a.provider, a.forIssuer = p, issuer
 	return p, nil
@@ -352,4 +356,13 @@ func firstNonEmpty(vals ...string) string {
 		}
 	}
 	return ""
+}
+
+// issuerHint explains go-oidc's issuer mismatch, which usually means the issuer
+// was entered with or without a trailing slash that the provider does not use
+func issuerHint(err error) error {
+	if !strings.Contains(err.Error(), "issuer did not match") {
+		return err
+	}
+	return fmt.Errorf("%w (set Issuer to exactly the \"got\" value, including any trailing slash)", err)
 }
