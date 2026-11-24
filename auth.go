@@ -359,10 +359,12 @@ func firstNonEmpty(vals ...string) string {
 }
 
 // issuerHint explains go-oidc's issuer mismatch, which usually means the issuer
-// was entered with or without a trailing slash that the provider does not use
+// was entered with or without a trailing slash that the provider does not use.
+// go-oidc words it "issuer did not match the issuer returned by provider" up to
+// v3.14 and "… did not match the issuer URL returned by provider" since.
 func issuerHint(err error) error {
-	if !strings.Contains(err.Error(), "issuer did not match") {
+	if !strings.Contains(err.Error(), "did not match the issuer") {
 		return err
 	}
-	return fmt.Errorf("%w (set Issuer to exactly the \"got\" value, including any trailing slash)", err)
+	return fmt.Errorf("%w (set Issuer to exactly the provider's value, including any trailing slash)", err)
 }
