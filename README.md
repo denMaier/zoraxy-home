@@ -103,7 +103,7 @@ make release        # dist/release/home_<os>_<arch> for every store platform
 make introspect     # regenerate .introspect after changing the plugin metadata
 ```
 
-To release, bump the version in `main.go` and run `make introspect`. Commit, then push a matching tag such as `v0.2.0`. The release workflow builds the binaries and attaches them to a GitHub release. The plugin store reads `.introspect` and `.releaseurl` from this repository.
+Releases are automatic; see [CONTRIBUTING.md](CONTRIBUTING.md). The release pull request bumps the version in `main.go` and `.introspect`. The plugin store reads `.introspect` and `.releaseurl` from this repository.
 
 ## License
 
