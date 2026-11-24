@@ -32,9 +32,9 @@ func main() {
 		Description:   "Turns your active HTTP proxy rules into a phone-style homepage with OIDC sign-in (Pocket ID, Authentik, Keycloak, …), per-user layouts, folders and themes",
 		URL:           "https://github.com/denMaier/zoraxy-home",
 		Type:          plugin.PluginType_Utilities,
-		VersionMajor:  0,
-		VersionMinor:  3,
-		VersionPatch:  1,
+		VersionMajor:  0, // x-release-please-major
+		VersionMinor:  3, // x-release-please-minor
+		VersionPatch:  1, // x-release-please-patch
 
 		UIPath: UI_PATH,
 
