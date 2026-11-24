@@ -1,6 +1,6 @@
 module zoraxyhome
 
-go 1.25.0
+go 1.27.4
 
 require (
 	github.com/coreos/go-oidc/v3 v3.14.1
