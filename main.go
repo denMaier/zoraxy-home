@@ -34,7 +34,7 @@ func main() {
 		Type:          plugin.PluginType_Utilities,
 		VersionMajor:  0, // x-release-please-major
 		VersionMinor:  3, // x-release-please-minor
-		VersionPatch:  1, // x-release-please-patch
+		VersionPatch:  2, // x-release-please-patch
 
 		UIPath: UI_PATH,
 
