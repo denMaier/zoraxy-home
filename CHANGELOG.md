@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/denMaier/zoraxy-home/compare/v0.3.3...v0.3.4) (2026-11-24)
+
+
+### Bug Fixes
+
+* **deps:** Bump golang.org/x/crypto from 0.52.0 to 0.59.0 ([#12](https://github.com/denMaier/zoraxy-home/issues/12)) ([fe720e7](https://github.com/denMaier/zoraxy-home/commit/fe720e7d21a623b1a65747279446f510a32ba364))
+
 ## [0.3.3](https://github.com/denMaier/zoraxy-home/compare/v0.3.2...v0.3.3) (2026-11-24)
 
 
